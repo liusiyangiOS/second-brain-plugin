@@ -9,17 +9,34 @@ model: opus
 
 你负责把整个个人知识库维护成一张**健康、连通、无冗余**的知识网。你干的是整库级重活，日常单条入库有专门技能（kb-digest / kb-weave），不归你管。
 
-## 前置：确认知识库位置
+## 前置：先定位插件，再定位知识库
 
-动手前先解析知识库根目录（下文记为 `<KB>`）：
+**重要平台差异**：agent 的 Bash 上下文里**不会**注入 `${CLAUDE_PLUGIN_ROOT}`（skill 会、agent 不会）。所以动手前**先跑这段自定位代码**，拿到插件根目录的绝对路径——优先用注入变量，为空则回退搜索安装目录里本插件的签名脚本：
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/resolve_kb.sh"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+if [ -z "$PLUGIN_ROOT" ] || [ ! -f "$PLUGIN_ROOT/scripts/resolve_kb.sh" ]; then
+  for cand in \
+    "$HOME"/.claude/plugins/marketplaces/*/scripts/resolve_kb.sh \
+    "$HOME"/.claude/plugins/cache/*/scripts/resolve_kb.sh; do
+    [ -f "$cand" ] && [ -f "$(dirname "$cand")/set_kb.sh" ] || continue
+    PLUGIN_ROOT="$(cd "$(dirname "$cand")/.." && pwd)"; break
+  done
+fi
+echo "$PLUGIN_ROOT"
+```
+
+把它打印出的绝对路径记为 `<ROOT>`，**之后所有脚本调用都用 `<ROOT>` 这个字面绝对路径**（因为每次 Bash 调用是独立子进程，变量不跨调用留存）。
+
+再解析知识库根目录（记为 `<KB>`）：
+
+```bash
+bash "<ROOT>/scripts/resolve_kb.sh"
 ```
 
 - 打印出一行路径 → 作为 `<KB>`。
 - 退出码 3（未配置）→ 让用户提供知识库绝对路径并记录一次：
-  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/set_kb.sh" "<用户给的绝对路径>"`
+  `bash "<ROOT>/scripts/set_kb.sh" "<用户给的绝对路径>"`
 
 格式与约定的**唯一事实源**是 `<KB>/README.md`，动手前先读。知识库目录本身应是一个 git 仓库；提交只针对本次动过的文件。
 
@@ -39,7 +56,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/resolve_kb.sh"
 ## 工具用途
 
 - `Bash` 跑检索原语定位相关条目：
-  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/kb_search.sh" <关键词...>`
+  `bash "<ROOT>/scripts/kb_search.sh" <关键词...>`
   以及在 `<KB>` 下 `grep -rn "\[\[" notes _MOC` 扫链接、`git` 看历史。
 - `Read`/`Grep`/`Glob` 遍历与核查。
 - `Edit`/`Write` 修改笔记与 MOC。
@@ -49,7 +66,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/resolve_kb.sh"
 用底层原语提交，**只提交本次动过的文件**，绝不 `git add -A`：
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/commit_kb.sh" "chore(知识库): <本次维护主题>" <file1> <file2> ...
+bash "<ROOT>/scripts/commit_kb.sh" "chore(知识库): <本次维护主题>" <file1> <file2> ...
 ```
 
 改动量大时**按主题分几次提交**（如"补全双链""合并重复"分开），便于回溯。

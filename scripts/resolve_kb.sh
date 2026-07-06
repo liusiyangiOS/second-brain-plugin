@@ -4,7 +4,7 @@
 #
 # 解析顺序（先命中先用）：
 #   1. 环境变量 $SECOND_BRAIN_KB_PATH（非空时优先）
-#   2. 配置文件 ${CLAUDE_PLUGIN_DATA:-~/.config/second-brain-plugin}/kb_path
+#   2. 配置文件 ${CLAUDE_PLUGIN_DATA:-${CLAUDE_CONFIG_DIR:-~/.claude}/plugins/data/second-brain}/kb_path
 #   3. 都没有 → 退出码 3（"未配置"），调用方应引导用户运行 set_kb.sh 设置一次
 #
 # 成功时把知识库根目录路径打印到 stdout（单行）；失败信息走 stderr。
@@ -21,7 +21,7 @@ if [ -n "${SECOND_BRAIN_KB_PATH:-}" ]; then
 fi
 
 # 2) 持久化配置文件
-CONFIG_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.config/second-brain-plugin}"
+CONFIG_DIR="${CLAUDE_PLUGIN_DATA:-${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/data/second-brain}"
 CONFIG_FILE="${CONFIG_DIR}/kb_path"
 
 if [ -f "${CONFIG_FILE}" ]; then
