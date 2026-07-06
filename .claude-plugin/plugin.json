@@ -1,0 +1,10 @@
+{
+  "name": "second-brain-plugin",
+  "displayName": "第二大脑 · 个人知识库工具",
+  "description": "把 AI 生成的文档、调研结论、方案、经验沉淀分类归档进本地知识库，并支持消化入库(kb-digest)、编入知识网(kb-weave)、库内问答(kb-ask)、整库维护(kb-librarian)。不做 RAG：入库即炼成原子笔记 + 双链 + MOC，越用越聪明。",
+  "version": "1.0.0",
+  "author": {
+    "name": "liusiyang",
+    "url": "https://github.com/liusiyangiOS"
+  }
+}

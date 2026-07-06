@@ -1,0 +1,15 @@
+{
+  "name": "second-brain",
+  "version": "1.0.0",
+  "owner": {
+    "name": "liusiyang",
+    "url": "https://github.com/liusiyangiOS"
+  },
+  "plugins": [
+    {
+      "name": "second-brain-plugin",
+      "source": "./",
+      "description": "个人知识库工具（第二大脑）：归档 / 消化入库 / 编织知识网 / 库内问答 / 整库维护"
+    }
+  ]
+}
