@@ -2,16 +2,17 @@
 #
 # commit_kb.sh — 只暂存并提交「本次归档到知识库的文件」，然后推送到远端。
 #
-# 设计目的：知识库所在仓库（AboutAI）随时可能有其它未提交的无关改动。
+# 设计目的：知识库所在仓库随时可能有其它未提交的无关改动。
 # 本脚本绝不使用 `git add -A` / `git add .`，只精确暂存传入的文件路径，
-# 避免把用户遗留的无关改动一起提交上去。
+# 避免把用户遗留的无关改动一起提交上去。仓库根目录从传入文件自动推断，
+# 因此不关心知识库具体在哪个仓库、哪个子目录。
 #
 # 用法:
 #   commit_kb.sh "<commit message>" <file1> [file2 ...]
 #
 # 示例:
-#   commit_kb.sh "docs(知识库): 归档 Claude Code 子代理编排方法到 技术分享" \
-#     "/Users/liusiyang/Documents/GitHubOfMine/AboutAI/知识库/技术分享/2026-07-05-子代理编排.md"
+#   commit_kb.sh "docs(知识库): 归档 子代理编排方法 到 技术分享" \
+#     "/path/to/知识库/技术分享/2026-07-05-子代理编排.md"
 #
 set -euo pipefail
 
@@ -35,6 +36,7 @@ FIRST_DIR="$(cd "$(dirname "${FILES[0]}")" && pwd)"
 REPO="$(git -C "$FIRST_DIR" rev-parse --show-toplevel 2>/dev/null || true)"
 if [ -z "$REPO" ]; then
   echo "错误：目标路径不在任何 git 仓库内: ${FILES[0]}" >&2
+  echo "请确认知识库目录本身是一个 git 仓库（可 git init 并设置远端）。" >&2
   exit 1
 fi
 

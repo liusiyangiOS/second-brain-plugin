@@ -6,6 +6,8 @@
 # 供 kb-weave 找相关旧条目、kb-ask 组装候选集。检索的是"已炼好的半成品"，
 # 所以又快又准，不需要向量库。
 #
+# 知识库根目录由 resolve_kb.sh 解析（环境变量 / 配置文件），不写死任何本地路径。
+#
 # 用法:  kb_search.sh <关键词1> [关键词2 ...]
 # 输出:  每行 "命中数<TAB>路径<TAB>标题"，按命中数降序；无匹配则提示。
 #
@@ -13,7 +15,12 @@
 #
 set -eu
 
-KB="/Users/liusiyang/Documents/GitHubOfMine/AboutAI/知识库"
+SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+KB="$(bash "${SELF_DIR}/resolve_kb.sh")" || {
+  echo "（知识库位置未配置，无法检索——请先设置知识库路径：scripts/set_kb.sh <路径>）" >&2
+  exit 3
+}
 
 if [ "$#" -lt 1 ]; then
   echo "用法: kb_search.sh <关键词> [关键词...]" >&2
