@@ -54,14 +54,10 @@
 
 ## 安装
 
-因为已是独立 GitHub 仓库，直接用 GitHub 源，一行 `owner/repo` 即可（**和别人安装任何插件的命令格式完全一样**，不用写 `https://` 前缀）：
-
 ```
 /plugin marketplace add liusiyangiOS/second-brain-plugin
 /plugin install second-brain-plugin@second-brain
 ```
-
-> 命名对应关系：`second-brain-plugin` 是**插件名**，`second-brain` 是**marketplace 名**，所以安装写成 `插件@市场`。
 
 ## 首次使用：设置知识库位置（只需一次）
 
